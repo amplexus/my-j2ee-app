@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://demo.amplexus.org/orderservice/messages"
+	xmlns:tns="http://demo.amplexus.org/orderservice/messages"
+	elementFormDefault="qualified">
+
+	<element name="CreateOrderRequest">
+		<complexType>
+			<annotation>
+				<documentation>
+					Order creation request.
+				</documentation>
+			</annotation>
+			<sequence>
+				<element name="id" type="int" />
+				<element name="name" type="string" />
+				<element name="address" type="string" />
+				<element name="email" type="string" />
+				<element name="phoneNumber" type="string" />
+			</sequence>
+		</complexType>
+	</element>
+	
+	<element name="CreateOrderResponse">
+		<complexType>
+			<sequence>
+				<element name="id" type="int" />
+			</sequence>
+		</complexType>
+	</element>
+	
+	<element name="CancelOrderRequest">
+		<complexType>
+			<sequence>
+				<element name="id" type="int" />
+			</sequence>
+		</complexType>
+	</element>
+	
+	<element name="CancelOrderResponse">
+		<complexType>
+			<sequence>
+				<element name="id" type="int" />
+			</sequence>
+		</complexType>
+	</element>
+	
+	<element name="RetrieveOrderRequest">
+		<complexType>
+			<sequence>
+				<element name="id" type="int" />
+			</sequence>
+		</complexType>
+	</element>
+	
+	<element name="RetrieveOrderResponse">
+		<complexType>
+			<annotation>
+				<documentation>
+					Order retrieval request.
+				</documentation>
+			</annotation>
+			<sequence>
+				<element name="id" type="int" />
+				<element name="name" type="string" />
+				<element name="address" type="string" />
+				<element name="email" type="string" />
+				<element name="phoneNumber" type="string" />
+			</sequence>
+		</complexType>
+	</element>
+	
+	<element name="CreateOrderFault">
+		<complexType>
+			<sequence>
+				<element name="CreateOrderDetails" type="string">
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="CancelOrderFault">
+		<complexType>
+			<sequence>
+				<element name="CancelOrderDetails" type="string">
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="RetrieveOrderFault">
+		<complexType>
+			<sequence>
+				<element name="RetrieveOrderDetails" type="string">
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+</schema>

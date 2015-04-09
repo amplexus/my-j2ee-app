@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>org.amplexus.demo</groupId>
+      <artifactId>j2ee-app</artifactId>
+      <version>1.0</version>
+   </parent>
+
+   <groupId>org.amplexus.demo</groupId>
+   <artifactId>j2ee-app-ear</artifactId>
+   <packaging>ear</packaging>
+
+   <name>j2ee-app EAR module</name>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.amplexus.demo</groupId>
+         <artifactId>j2ee-app-ejb</artifactId>
+         <type>ejb</type>
+      </dependency>
+      <dependency>
+         <groupId>org.amplexus.demo</groupId>
+         <artifactId>j2ee-app-ws</artifactId>
+         <type>war</type>
+      </dependency>
+      <dependency>
+         <groupId>org.amplexus.demo</groupId>
+         <artifactId>j2ee-app-web</artifactId>
+         <type>war</type>
+      </dependency>
+   </dependencies>
+
+   <build>
+      <finalName>j2ee-app</finalName>
+      <plugins>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-ear-plugin</artifactId>
+            <configuration>
+               <!-- Tell Maven we are using Java EE 6 -->
+               <version>5</version>
+               <!-- Use Java EE ear libraries as needed. Java EE ear libraries are in easy way to package any libraries needed in the ear, and automatically 
+                  have any modules (EJB-JARs and WARs) use them -->
+               <defaultLibBundleDir>lib</defaultLibBundleDir>
+               <modules>
+                  <!-- Register our War as a web module, and set the context root -->
+                  <webModule>
+                     <groupId>org.amplexus.demo</groupId>
+                     <artifactId>j2ee-app-web</artifactId>
+                     <!-- Define the context root for the webapp -->
+                     <contextRoot>/j2ee-app-web</contextRoot>
+                  </webModule>
+                  <webModule>
+                     <groupId>org.amplexus.demo</groupId>
+                     <artifactId>j2ee-app-ws</artifactId>
+                     <!-- Define the context root for the webapp -->
+                     <contextRoot>/j2ee-app</contextRoot>
+                  </webModule>
+               </modules>
+               <earSourceDirectory>${project.basedir}/src/main/application</earSourceDirectory>
+            </configuration>
+         </plugin>
+
+      </plugins>
+   </build>
+
+</project>

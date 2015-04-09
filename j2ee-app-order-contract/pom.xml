@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+     <artifactId>j2ee-app</artifactId>
+     <groupId>org.amplexus.demo</groupId>
+     <version>1.0</version>
+  </parent>
+
+  <groupId>org.amplexus.demo</groupId>
+  <artifactId>j2ee-app-order-contract</artifactId>
+  <version>1.0</version>
+  <packaging>pom</packaging>
+
+  <name>j2ee-app order-contract</name>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+	<groupId>org.apache.cxf</groupId>
+	<artifactId>cxf-wsdl-validator-plugin</artifactId>
+        <version>${cxf.version}</version> <!-- need this here otherwise building in topmost dir barfs! -->
+        <configuration>
+          <wsdlRoot>${basedir}/src/main/resources</wsdlRoot>
+        </configuration>
+        <executions>
+          <execution>
+            <id>validate-wsdl</id>
+            <goals>
+              <goal>wsdlvalidator</goal>
+            </goals>
+            <phase>process-resources</phase>
+          </execution>
+        </executions>
+       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/order-contract.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+       </plugin>
+
+    </plugins>
+  </build>
+</project>

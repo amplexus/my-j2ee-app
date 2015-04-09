@@ -1,0 +1,255 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+     <artifactId>j2ee-app</artifactId>
+     <groupId>org.amplexus.demo</groupId>
+     <version>1.0</version>
+  </parent>
+  <groupId>org.amplexus.demo</groupId>
+  <artifactId>j2ee-app-integrationtest</artifactId>
+  <version>1.0</version>
+  <packaging>pom</packaging>
+  <name>j2ee-app integration test</name>
+  <dependencies>
+
+     <!-- Test scope dependencies -->
+     <dependency>
+        <groupId>org.amplexus.demo</groupId>
+        <artifactId>j2ee-app-order-contract</artifactId>
+        <version>${pom.version}</version>
+        <type>pom</type>
+        <scope>test</scope>
+     </dependency>
+
+     <dependency>
+        <groupId>org.amplexus.demo</groupId>
+        <artifactId>j2ee-app-testlib</artifactId>
+        <version>${pom.version}</version>
+        <scope>test</scope>
+        <type>jar</type>
+     </dependency>
+
+     <dependency>
+        <groupId>org.amplexus.demo</groupId>
+        <artifactId>j2ee-app-ear</artifactId>
+        <version>${pom.version}</version>
+        <scope>test</scope>
+        <type>ear</type>
+     </dependency>
+
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.apache.cxf</groupId>
+         <artifactId>cxf-rt-bindings-soap</artifactId>
+         <version>${cxf.version}</version>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.apache.cxf</groupId>
+         <artifactId>cxf-rt-transports-http</artifactId>
+         <version>${cxf.version}</version>
+         <scope>test</scope>
+      </dependency>
+
+
+  </dependencies>
+
+  <build>
+    <testSourceDirectory>${project.basedir}/src/integration-test/java</testSourceDirectory>
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/integration-test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
+    <plugins>
+      <!-- Unzip wsdl artifact -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+           <execution>
+              <id>unpack-wsdl</id>
+              <phase>initialize</phase>
+              <configuration>
+                <artifactItems>
+                  <artifactItem>
+                    <groupId>org.amplexus.demo</groupId>
+                    <artifactId>j2ee-app-order-contract</artifactId>
+                    <version>1.0</version>
+                    <classifier>wsdl</classifier>
+                    <overWrite>true</overWrite>
+                    <type>zip</type>
+                  </artifactItem>
+                </artifactItems>
+                <outputDirectory>${project.build.directory}/wsdl</outputDirectory>
+              </configuration>
+              <goals>
+                 <goal>unpack</goal>
+              </goals>
+           </execution>
+        </executions>
+      </plugin>
+
+      <!-- wsdl2java -->
+      <plugin>
+         <groupId>org.apache.cxf</groupId>
+         <artifactId>cxf-codegen-plugin</artifactId>
+         <version>${cxf.version}</version>
+         <executions>
+            <execution>
+               <id>generate-sources</id>
+               <configuration>
+                  <sourceRoot>${project.build.directory}/generated-sources</sourceRoot>
+                  <wsdlOptions>
+                     <wsdlOption>
+                        <wsdl>${project.build.directory}/wsdl/j2ee-app-order-contract-1.0/j2ee-app-order-contract.wsdl</wsdl>
+                     </wsdlOption>
+                  </wsdlOptions>
+               </configuration>
+               <goals>
+                  <goal>wsdl2java</goal>
+               </goals>
+            </execution>
+         </executions>
+      </plugin>
+
+      <!-- Compile generated code -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Compile test code -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Generate test.properties -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-testResources</id>
+            <goals>
+              <goal>testResources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Start server -->
+      <!-- Stop server -->
+      <!-- Deploy app -->
+
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <configuration>
+          <container>
+            <containerId>jboss71x</containerId>
+	    <zipUrlInstaller>
+	      <downloadDir>${project.basedir}/downloads</downloadDir>
+	      <url>http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.zip</url>
+	    </zipUrlInstaller>
+          </container>
+          <configuration>
+            <home>${project.build.directory}/jboss-as-7.1.1.Final</home>
+            <properties>
+               <cargo.logging>low</cargo.logging>
+               <cargo.servlet.port>18080</cargo.servlet.port>
+            </properties>
+          </configuration>
+          <deployables>
+            <deployable>
+              <groupId>org.amplexus.demo</groupId>
+              <artifactId>j2ee-app-ear</artifactId>
+              <type>ear</type>
+              <!--<pingURL>http://localhost:18080/j2ee-app?wsdl</pingURL>-->
+              <pingURL>http://localhost:18080/j2ee-app/healthcheck/</pingURL>
+              <pingTimeout>30000</pingTimeout>
+            </deployable>
+          </deployables>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-container</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+              <goal>deploy</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>stop-container</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>undeploy</goal>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- integration test! -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <!-- The following required because maven doesn't copy test resources to target/test-classes dir when overriding testResourceDirectory... -->
+<!--
+          <additionalClasspathElements>
+            <additionalClasspathElement>${project.basedir}/src/integration-test/resources</additionalClasspathElement>
+          </additionalClasspathElements>
+-->
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.14</version>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>

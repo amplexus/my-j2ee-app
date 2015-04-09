@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id:  $ -->
+<!-- $URL: $ -->
+<datasources>
+	<local-tx-datasource>
+		<jndi-name>basicDS</jndi-name>
+		<driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+
+		<connection-url>${app.dburl}</connection-url>
+		<user-name>${app.dblogin}</user-name>
+		<password>${app.dbpassword}</password>
+
+		<min-pool-size>5</min-pool-size>
+
+		<!-- The maximum connections in a pool/sub-pool -->
+		<max-pool-size>40</max-pool-size>
+
+		<valid-connection-checker-class-name>org.jboss.resource.adapter.jdbc.vendor.OracleValidConnectionChecker</valid-connection-checker-class-name>
+		<background-validation>TRUE</background-validation>
+		<background-validation-minutes>2</background-validation-minutes>
+		<idle-timeout-minutes>4</idle-timeout-minutes>
+		<exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.OracleExceptionSorter</exception-sorter-class-name>
+		<metadata>
+			<type-mapping>Oracle9i</type-mapping>
+		</metadata>
+	</local-tx-datasource>
+</datasources>

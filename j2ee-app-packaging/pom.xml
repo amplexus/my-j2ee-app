@@ -1,0 +1,127 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+     <artifactId>j2ee-app</artifactId>
+     <groupId>org.amplexus.demo</groupId>
+     <version>1.0</version>
+  </parent>
+
+  <groupId>org.amplexus.demo</groupId>
+  <artifactId>j2ee-app-packaging</artifactId>
+  <version>1.0</version>
+  <packaging>rpm</packaging>
+
+  <name>j2ee-app packaging</name>
+
+  <build>
+    <filters>
+      <filter>src/main/filters/${my.config}-config.properties</filter>
+    </filters>
+ 
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <executions>
+           <execution>
+              <goals>
+                 <goal>rpm</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <copyright>2013, Telstra</copyright>
+           <distribution>TDI</distribution>
+           <group>Application/TDI</group>
+           <packager>tdi</packager>
+           <prefix>/usr/local</prefix>
+           <defineStatements>
+              <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
+           </defineStatements>
+           <mappings>
+              <mapping>
+                  <directory>/usr/local/jboss/deploy</directory>
+                  <filemode>640</filemode>
+                  <username>craig</username>
+                  <groupname>craig</groupname>
+                  <sources>
+                      <source>
+                          <location>target/classes/myjbossapp-ds.xml</location>
+                      </source>
+                  </sources>
+                  <configuration>true</configuration>
+              </mapping>
+              <mapping>
+                  <directory>/usr/local/jboss/conf</directory>
+                  <filemode>640</filemode>
+                  <username>craig</username>
+                  <groupname>craig</groupname>
+                  <sources>
+                      <source>
+                          <location>target/classes/application.properties</location>
+                      </source>
+                  </sources>
+                  <configuration>true</configuration>
+              </mapping>
+              <mapping>
+                 <directory>/usr/local/jboss/deploy</directory>
+                 <filemode>750</filemode>
+                 <username>craig</username>
+                 <groupname>craig</groupname>
+                 <dependency>
+                    <includes>
+                       <include>org.amplexus.demo:j2ee-app-ear</include>
+                    </includes>
+                 </dependency>
+              </mapping>
+            </mappings>
+            <preinstallScriptlet>
+               <script>echo "installing now"</script>
+            </preinstallScriptlet>
+            <postinstallScriptlet>
+               <scriptFile>src/main/scripts/postinstall.sh</scriptFile>
+               <fileEncoding>utf-8</fileEncoding>
+            </postinstallScriptlet>
+            <preremoveScriptlet>
+               <scriptFile>src/main/scripts/preremove.sh</scriptFile>
+               <fileEncoding>utf-8</fileEncoding>
+            </preremoveScriptlet>
+         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <dependencies>
+
+     <dependency>
+         <groupId>org.amplexus.demo</groupId>
+         <artifactId>j2ee-app-ear</artifactId>
+         <version>1.0</version>
+         <type>ear</type>
+     </dependency>
+
+  </dependencies>
+
+</project>

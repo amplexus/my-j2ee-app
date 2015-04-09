@@ -1,0 +1,363 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>j2ee-app</artifactId>
+    <groupId>org.amplexus.demo</groupId>
+    <version>1.0</version>
+  </parent>
+
+  <groupId>org.amplexus.demo</groupId>
+  <artifactId>j2ee-app-loadtest</artifactId>
+  <version>1.0</version>
+  <packaging>pom</packaging>
+  <name>j2ee-app load test</name>
+
+  <dependencies>
+
+    <!-- Test scope dependencies -->
+    <dependency>
+      <groupId>org.amplexus.demo</groupId>
+      <artifactId>j2ee-app-order-contract</artifactId>
+      <version>${pom.version}</version>
+      <type>pom</type>
+      <scope>test-compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.amplexus.demo</groupId>
+      <artifactId>j2ee-app-testlib</artifactId>
+      <version>${pom.version}</version>
+      <scope>test</scope>
+      <type>jar</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.amplexus.demo</groupId>
+      <artifactId>j2ee-app-ear</artifactId>
+      <version>${pom.version}</version>
+      <scope>test</scope>
+      <type>ear</type>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-bundle</artifactId>
+      <version>${cxf.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.jmeter</groupId>
+      <artifactId>ApacheJMeter</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.jmeter</groupId>
+      <artifactId>ApacheJMeter_java</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
+    <plugins>
+
+      <!-- Unzip wsdl artifact -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <id>unpack-wsdl</id>
+            <phase>initialize</phase>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.amplexus.demo</groupId>
+                  <artifactId>j2ee-app-order-contract</artifactId>
+                  <version>1.0</version>
+                  <classifier>wsdl</classifier>
+                  <overWrite>true</overWrite>
+                  <type>zip</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/wsdl</outputDirectory>
+            </configuration>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- wsdl2java -->
+      <plugin>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-codegen-plugin</artifactId>
+        <version>${cxf.version}</version>
+        <executions>
+          <execution>
+            <id>generate-sources</id>
+            <configuration>
+              <sourceRoot>${project.build.directory}/generated-sources</sourceRoot>
+              <wsdlOptions>
+                <wsdlOption>
+                  <wsdl>${project.build.directory}/wsdl/j2ee-app-order-contract-1.0/j2ee-app-order-contract.wsdl</wsdl>
+                </wsdlOption>
+              </wsdlOptions>
+            </configuration>
+            <goals>
+              <goal>wsdl2java</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Compile generated code -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Compile test code -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Generate test.properties -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-testResources</id>
+            <goals>
+              <goal>testResources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Build test-jar - required for JMeter -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Copy required jars to JMeter lib/ext dir -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-jars-to-jmeter-lib-ext</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.amplexus.demo</groupId>
+                  <artifactId>j2ee-app-loadtest</artifactId>
+                  <version>1.0</version>
+                  <type>test-jar</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.basedir}/target/jmeter/lib/ext</outputDirectory>
+              <stripVersion>true</stripVersion>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Copy required jars to JMeter lib dir -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-jars-to-jmeter-lib</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.amplexus.demo</groupId>
+                  <artifactId>j2ee-app-testlib</artifactId>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.cxf</groupId>
+                  <artifactId>cxf-bundle</artifactId>
+                  <version>${cxf.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.ws.commons.schema</groupId>
+                  <artifactId>XmlSchema</artifactId>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.neethi</groupId>
+                  <artifactId>neethi</artifactId>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>wsdl4j</groupId>
+                  <artifactId>wsdl4j</artifactId>
+                  <type>jar</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.basedir}/target/jmeter/lib</outputDirectory>
+              <stripVersion>true</stripVersion>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Start server -->
+      <!-- Stop server -->
+      <!-- Deploy app -->
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <configuration>
+          <container>
+            <containerId>jboss71x</containerId>
+            <zipUrlInstaller>
+	      <downloadDir>${project.basedir}/downloads</downloadDir>
+              <url>http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.zip</url>
+            </zipUrlInstaller>
+          </container>
+          <configuration>
+            <home>${project.build.directory}/jboss-as-7.1.1.Final</home>
+            <properties>
+               <cargo.logging>low</cargo.logging>
+               <cargo.servlet.port>18080</cargo.servlet.port>
+               <!-- don't create in jmeter/logs dir because it won't exist yet! -->
+               <cargo.jvmargs>"-agentlib:hprof=cpu=samples,depth=64,lineno=y,file=${project.basedir}/target/server-hprof.txt"</cargo.jvmargs>
+            </properties>
+          </configuration>
+          <deployables>
+            <deployable>
+              <groupId>org.amplexus.demo</groupId>
+              <artifactId>j2ee-app-ear</artifactId>
+              <type>ear</type>
+              <!-- <pingURL>http://localhost:8080/j2ee-app?wsdl</pingURL> -->
+              <pingURL>http://localhost:18080/j2ee-app/healthcheck/</pingURL>
+              <pingTimeout>20000</pingTimeout>
+            </deployable>
+          </deployables>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-container</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+              <goal>deploy</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>stop-container</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>undeploy</goal>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- run JMeter -->
+      <plugin>
+        <groupId>com.lazerycode.jmeter</groupId>
+        <artifactId>jmeter-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>jmeter-tests</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>jmeter</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <propertiesJMeter>
+            <log_file>${project.basedir}/target/jmeter/logs/jmeter.log</log_file>
+          </propertiesJMeter>
+          <ignoreResultFailures>true</ignoreResultFailures>
+          <ignoreResultErrors>true</ignoreResultErrors>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.lazerycode.jmeter</groupId>
+        <artifactId>jmeter-analysis-maven-plugin</artifactId>
+        <version>1.0.2</version>
+        <executions>
+          <execution>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>analyze</goal>
+            </goals>
+            <configuration>
+              <source>${project.build.directory}/**/*.jtl</source>
+              <targetDirectory>${project.build.directory}</targetDirectory>
+              <generateCharts>true</generateCharts>
+              <generateCSVs>true</generateCSVs>
+              <preserveDirectories>true</preserveDirectories>
+              <processAllFilesFound>true</processAllFilesFound>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+</project>

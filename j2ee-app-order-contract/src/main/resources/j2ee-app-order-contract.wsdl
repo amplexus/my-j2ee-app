@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tns="http://demo.amplexus.org/orderservice/" 
+	xmlns:msgs="http://demo.amplexus.org/orderservice/messages"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	name="OrderService" 
+	targetNamespace="http://demo.amplexus.org/orderservice/">
+
+	<wsdl:types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema">
+			<import namespace="http://demo.amplexus.org/orderservice/messages" schemaLocation="j2ee-app-order-contract.xsd" />
+		</schema>
+	</wsdl:types>
+
+	<wsdl:message name="CreateOrderRequest">
+		<wsdl:part element="msgs:CreateOrderRequest" name="parameters" />
+	</wsdl:message>
+	<wsdl:message name="CreateOrderResponse">
+		<wsdl:part element="msgs:CreateOrderResponse" name="parameters" />
+	</wsdl:message>
+	<wsdl:message name="CancelOrderRequest">
+		<wsdl:part element="msgs:CancelOrderRequest" name="parameters" />
+	</wsdl:message>
+	<wsdl:message name="CancelOrderResponse">
+		<wsdl:part element="msgs:CancelOrderResponse" name="parameters" />
+	</wsdl:message>
+	<wsdl:message name="RetrieveOrderRequest">
+		<wsdl:part element="msgs:RetrieveOrderRequest" name="parameters" />
+	</wsdl:message>
+	<wsdl:message name="RetrieveOrderResponse">
+		<wsdl:part element="msgs:RetrieveOrderResponse" name="parameters" />
+	</wsdl:message>
+	<wsdl:message name="CreateOrderFault">
+		<wsdl:part element="msgs:CreateOrderFault" name="parameters"/>
+	</wsdl:message>
+	<wsdl:message name="CancelOrderFault">
+		<wsdl:part element="msgs:CancelOrderFault" name="parameters"/>
+	</wsdl:message>
+	<wsdl:message name="RetrieveOrderFault">
+		<wsdl:part element="msgs:RetrieveOrderFault" name="parameters"/>
+	</wsdl:message>
+
+	<wsdl:portType name="OrderService">
+		<wsdl:operation name="CreateOrder">
+			<wsdl:documentation>
+Create an order for purchasing a product.
+
+An order will be created and an email sent to the customer containing the order number and a URL for tracking their order progress.
+
+The input request contains:
+&lt;ul&gt;
+&lt;li&gt;productCode - mandatory - identifies the product being purchased.
+&lt;li&gt;unitPrice - mandatory - the price (exclusive of GST) per unit.
+&lt;li&gt;quantity - mandatory - the number of units being purchased.
+&lt;li&gt;customerName - mandatory - the name of the customer that purchased this order.
+&lt;li&gt;shippingAddress - mandatory - the address the order is being shipped to.
+&lt;li&gt;shippingPostcode - mandatory - the postcode the order is being shipped to.
+&lt;li&gt;shippingState - mandatory - the state the order is being shipped to.
+&lt;li&gt;billingEmail - mandatory - contact email for sending the electronic invoice to.
+&lt;/ul&gt;
+@param parameters the order details to be created.
+@return a response containing the generated order id
+@throws CreateOrderFault - if the input request is invalid. 
+			</wsdl:documentation>
+		
+			<wsdl:input message="tns:CreateOrderRequest" />
+			<wsdl:output message="tns:CreateOrderResponse" />
+		    <wsdl:fault name="fault" message="tns:CreateOrderFault"/>
+		</wsdl:operation>
+
+		<wsdl:operation name="CancelOrder">
+			<wsdl:documentation>
+Cancel an order.
+
+An order will be cancelled.
+
+The input request contains:
+&lt;ul&gt;
+&lt;li&gt;orderId - mandatory - the order being cancelled.
+&lt;/ul&gt;
+@param parameters the order details to be cancelled.
+@return a response.
+@throws CancelOrderFault - if the input request is invalid. 
+			</wsdl:documentation>
+		
+			<wsdl:input message="tns:CancelOrderRequest" />
+			<wsdl:output message="tns:CancelOrderResponse" />
+		    <wsdl:fault name="fault" message="tns:CancelOrderFault"/>
+		</wsdl:operation>
+
+		<wsdl:operation name="RetrieveOrder">
+			<wsdl:documentation>
+Retrieve an order.
+
+The order will be retrieved.
+
+The input request contains:
+&lt;ul&gt;
+&lt;li&gt;orderId - mandatory - the order being retrieved.
+&lt;/ul&gt;
+@param parameters the order details to be retrieved.
+@return a response containing the order details.
+@throws RetrieveOrderFault - if the input request is invalid. 
+			</wsdl:documentation>
+		
+			<wsdl:input message="tns:RetrieveOrderRequest" />
+			<wsdl:output message="tns:RetrieveOrderResponse" />
+		    <wsdl:fault name="fault" message="tns:RetrieveOrderFault"/>
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:binding name="OrderServiceSOAP" type="tns:OrderService">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="CreateOrder">
+			<soap:operation soapAction="http://demo.amplexus.org/orderservice/CreateOrder" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="CancelOrder">
+			<soap:operation soapAction="http://demo.amplexus.org/orderservice/CancelOrder" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="RetrieveOrder">
+			<soap:operation soapAction="http://demo.amplexus.org/orderservice/RetrieveOrder" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="OrderService">
+		<wsdl:documentation>
+Order management service.
+		</wsdl:documentation>
+	
+		<wsdl:port binding="tns:OrderServiceSOAP" name="OrderServiceSOAP">
+			<soap:address location="http://localhost:8080/orderservice" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

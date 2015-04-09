@@ -1,0 +1,112 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+     <artifactId>j2ee-app</artifactId>
+     <groupId>org.amplexus.demo</groupId>
+     <version>1.0</version>
+  </parent>
+
+  <groupId>org.amplexus.demo</groupId>
+  <artifactId>j2ee-app-testlib</artifactId>
+  <version>1.0</version>
+  <packaging>jar</packaging>
+
+  <name>j2ee-app test library</name>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <!-- Unzip shared resources -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+           <execution>
+              <id>unpack-wsdl</id>
+              <phase>initialize</phase>
+              <configuration>
+                <artifactItems>
+                  <artifactItem>
+                    <groupId>org.amplexus.demo</groupId>
+                    <artifactId>j2ee-app-order-contract</artifactId>
+                    <version>1.0</version>
+                    <classifier>wsdl</classifier>
+                    <overWrite>true</overWrite>
+                    <type>zip</type>
+                  </artifactItem>
+                </artifactItems>
+                <outputDirectory>${project.build.directory}/wsdl</outputDirectory>
+              </configuration>
+              <goals>
+                 <goal>unpack</goal>
+              </goals>
+           </execution>
+        </executions>
+      </plugin>
+
+      <!-- wsdl2java -->
+      <plugin>
+         <groupId>org.apache.cxf</groupId>
+         <artifactId>cxf-codegen-plugin</artifactId>
+         <executions>
+            <execution>
+               <id>generate-sources</id>
+               <configuration>
+                  <sourceRoot>${project.build.directory}/generated-sources</sourceRoot>
+                  <wsdlOptions>
+                     <wsdlOption>
+                        <wsdl>${project.build.directory}/wsdl/j2ee-app-order-contract-1.0/j2ee-app-order-contract.wsdl</wsdl>
+                     </wsdlOption>
+                  </wsdlOptions>
+               </configuration>
+               <goals>
+                  <goal>wsdl2java</goal>
+               </goals>
+            </execution>
+         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <dependencies>
+     <dependency>
+        <groupId>org.amplexus.demo</groupId>
+        <artifactId>j2ee-app-order-contract</artifactId>
+        <version>${pom.version}</version>
+        <type>pom</type>
+        <scope>compile</scope>
+     </dependency>
+
+      <!-- Test scope dependencies -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+  	<groupId>org.apache.cxf</groupId>
+  	<artifactId>cxf-rt-frontend-jaxws</artifactId>
+        <scope>compile</scope>
+      </dependency>
+  </dependencies>
+</project>

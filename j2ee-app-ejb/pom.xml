@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <artifactId>j2ee-app</artifactId>
+      <groupId>org.amplexus.demo</groupId>
+      <version>1.0</version>
+   </parent>
+
+   <artifactId>j2ee-app-ejb</artifactId>
+   <packaging>ejb</packaging>
+
+   <name>j2ee-app EJB module</name>
+
+   <dependencies>
+
+      <dependency>
+         <groupId>log4j</groupId>
+         <artifactId>log4j</artifactId>
+      </dependency>
+
+
+      <!-- Test scope dependencies -->
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+      </dependency>
+
+      <dependency>
+<!--
+          Had to ditch this due to the following bug:
+          http://maven.40175.n5.nabble.com/Problem-running-unit-tests-from-maven-JPA-related-td126893.html
+
+          <groupId>javax</groupId>
+          <artifactId>javaee-api</artifactId>
+          <version>6.0</version>
+-->
+          <groupId>org.apache.openejb</groupId> 
+          <artifactId>javaee-api</artifactId> 
+          <version>6.0-2</version> 
+          <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+	<groupId>org.mockito</groupId>
+	<artifactId>mockito-all</artifactId>
+        <scope>test</scope>
+      </dependency>
+            
+   </dependencies>
+
+   <build>
+     <plugins>
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-ejb-plugin</artifactId>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>cobertura-maven-plugin</artifactId>
+          <configuration>
+            <instrumentation>
+              <ignores>
+                <ignore>com.example.boringcode.*</ignore>
+              </ignores>
+              <excludes>
+                <exclude>com/example/dullcode/**/*.class</exclude>
+                <exclude>com/example/**/*Test.class</exclude>
+              </excludes>
+            </instrumentation>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>clean</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+         <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>cobertura-maven-plugin</artifactId>
+           <configuration>
+             <instrumentation>
+               <excludes>
+                 <exclude>org/amplexus/demo/model/*.class</exclude>
+                 <exclude>org/amplexus/demo/bean/OrderBean.class</exclude>
+               </excludes>
+             </instrumentation>
+           </configuration>
+           <executions>
+             <execution>
+               <goals>
+                 <goal>clean</goal>
+               </goals>
+             </execution>
+           </executions>
+         </plugin>
+
+     </plugins>
+   </build>
+
+</project>
