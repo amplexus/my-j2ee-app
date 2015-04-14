@@ -277,6 +277,7 @@
             <properties>
                <cargo.logging>low</cargo.logging>
                <cargo.servlet.port>18080</cargo.servlet.port>
+               <cargo.jboss.ajp.port>18009</cargo.jboss.ajp.port>
                <!-- don't create in jmeter/logs dir because it won't exist yet! -->
                <cargo.jvmargs>"-agentlib:hprof=cpu=samples,depth=64,lineno=y,file=${project.basedir}/target/server-hprof.txt"</cargo.jvmargs>
             </properties>

@@ -185,6 +185,7 @@
             <properties>
                <cargo.logging>low</cargo.logging>
                <cargo.servlet.port>18080</cargo.servlet.port>
+               <cargo.jboss.ajp.port>18009</cargo.jboss.ajp.port>
             </properties>
           </configuration>
           <deployables>
