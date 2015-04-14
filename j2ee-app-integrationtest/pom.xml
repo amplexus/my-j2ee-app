@@ -195,7 +195,7 @@
               <type>ear</type>
               <!--<pingURL>http://localhost:18080/j2ee-app?wsdl</pingURL>-->
               <pingURL>http://localhost:18080/j2ee-app/healthcheck/</pingURL>
-              <pingTimeout>30000</pingTimeout>
+              <pingTimeout>60000</pingTimeout>
             </deployable>
           </deployables>
         </configuration>
